@@ -4,6 +4,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "ts-loader": "^7.0.3",
     "typescript": "^3.8.3"
   }
 }
