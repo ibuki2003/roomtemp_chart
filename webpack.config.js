@@ -1,4 +1,5 @@
 const mode = process.env.NODE_ENV || 'development';
+const path = require('path');
 module.exports = {
   mode: mode,
   entry: './src/index.ts',
@@ -15,6 +16,9 @@ module.exports = {
     ]
   },
   resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
     extensions: ['.ts', '.js']
   }
 }
