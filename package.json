@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@types/chart.js": "^2.9.20",
     "@typescript-eslint/eslint-plugin": "^2.31.0",
     "@typescript-eslint/parser": "^2.31.0",
     "eslint": "^6.8.0",
@@ -10,6 +11,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "chart.js": "^2.9.3",
     "ts-loader": "^7.0.3",
     "typescript": "^3.8.3"
   },
