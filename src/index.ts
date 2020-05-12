@@ -1,6 +1,7 @@
 import { get_data } from "./api";
 import { Chart } from "chart.js";
 import * as moment from "moment";
+import { AssertionError } from "assert";
 
 const elm = document.getElementById("chart") as HTMLCanvasElement;
 
@@ -92,6 +93,15 @@ class ChartWrapper {
   }
 
   draw() {
+    if (
+      this.chart.data.datasets === undefined ||
+      this.chart.config.options === undefined ||
+      this.chart.config.options.scales === undefined ||
+      this.chart.config.options.scales.xAxes === undefined ||
+      this.chart.config.options.scales.xAxes[0].ticks === undefined
+    )
+      throw new AssertionError();
+
     const keys = Object.keys(this.rawdata).sort();
     this.chart.data.labels = keys;
     this.chart.data.datasets[0].data = keys.map((k) => this.rawdata[k].temp);
@@ -116,16 +126,16 @@ class ChartWrapper {
       });
     } else {
       const min_x = moment(
-        Object.keys(this.rawdata).reduce(
-          (mi, a) => (a < mi || mi === null ? a : mi),
-          null
-        )
+        Object.keys(this.rawdata).reduce((mi: string | null, a) => {
+          if (mi === null) return a;
+          return a < mi ? a : mi;
+        }, null)
       );
       const max_x = moment(
-        Object.keys(this.rawdata).reduce(
-          (mi, a) => (a > mi || mi === null ? a : mi),
-          null
-        )
+        Object.keys(this.rawdata).reduce((mi: string | null, a) => {
+          if (mi === null) return a;
+          return a > mi ? a : mi;
+        }, null)
       ).add(5, "minutes");
 
       if (min_x > this.range.begin) {
@@ -179,17 +189,17 @@ const chart = new ChartWrapper(
 chart.update();
 
 document
-  .getElementById("button_zoomin")
-  .addEventListener("click", () => chart.zoom_in());
+  // eslint-disable-next-line prettier/prettier
+  .getElementById("button_zoomin")?.addEventListener("click", () => chart.zoom_in());
 
 document
   .getElementById("button_zoomout")
-  .addEventListener("click", () => chart.zoom_out());
+  ?.addEventListener("click", () => chart.zoom_out());
 
 document
   .getElementById("button_panleft")
-  .addEventListener("click", () => chart.pan_left());
+  ?.addEventListener("click", () => chart.pan_left());
 
 document
   .getElementById("button_panright")
-  .addEventListener("click", () => chart.pan_right());
+  ?.addEventListener("click", () => chart.pan_right());
