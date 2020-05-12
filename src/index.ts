@@ -94,6 +94,9 @@ class ChartWrapper {
   draw() {
     const keys = Object.keys(this.rawdata).sort();
     this.chart.data.labels = keys;
+    this.chart.data.datasets[0].data = keys.map((k) => this.rawdata[k].temp);
+    this.chart.update({ duration: 0 });
+
     this.chart.config.options.scales.xAxes[0].ticks.min = this.range.begin.format(
       this.timeFormat
     );
@@ -101,7 +104,6 @@ class ChartWrapper {
       this.timeFormat
     );
 
-    this.chart.data.datasets[0].data = keys.map((k) => this.rawdata[k].temp);
     this.chart.update();
   }
 
