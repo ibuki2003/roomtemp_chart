@@ -3,8 +3,6 @@ import { Chart } from "chart.js";
 import * as moment from "moment";
 import { AssertionError } from "assert";
 
-const elm = document.getElementById("chart") as HTMLCanvasElement;
-
 interface Datum {
   temp: number;
 }
