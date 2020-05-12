@@ -3,6 +3,7 @@
     "target": "ESNext",
     "module": "CommonJS",
     "noImplicitAny": true,
+    "strictNullChecks": true,
     "baseUrl": "./",
     "paths": {
       "@/*": ["src/*"]
