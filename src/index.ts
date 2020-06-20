@@ -165,7 +165,7 @@ class ChartWrapper {
           if (mi === null) return a;
           return a > mi ? a : mi;
         }, null)
-      ).add(5, "minutes");
+      ).add(1, "minutes");
 
       if (min_x > this.range.begin) {
         (await get_data(this.range.begin, min_x)).forEach((a) =>
