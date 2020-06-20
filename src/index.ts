@@ -1,10 +1,11 @@
-import { get_data } from "./api";
+import { get_data, ApiRow } from "./api";
 import { Chart } from "chart.js";
 import * as moment from "moment";
 import { AssertionError } from "assert";
 
 interface Datum {
-  temp: number;
+  temp?: number;
+  co2?: number;
 }
 class ChartWrapper {
   readonly timeFormat = "YYYY/MM/DD HH:mm";
@@ -49,14 +50,23 @@ class ChartWrapper {
           {
             lineTension: 0,
             label: "temperature",
+            yAxisID: "temp",
             fill: false,
             data: [],
+            backgroundColor: "#ff000055",
+            borderColor: "#ff000033",
+            spanGaps: true,
           },
-          // {
-          //   lineTension: 0,
-          //   label: "carbon-dioxide",
-          //   fill: false,
-          // },
+          {
+            lineTension: 0,
+            label: "carbon-dioxide",
+            yAxisID: "co2",
+            fill: false,
+            data: [],
+            backgroundColor: "#0000ff55",
+            borderColor: "#0000ff33",
+            spanGaps: true,
+          },
         ],
       },
       options: {
@@ -85,6 +95,22 @@ class ChartWrapper {
               },
             },
           ],
+          yAxes: [
+            {
+              id: "temp",
+              type: "linear",
+              position: "left",
+            },
+            {
+              id: "co2",
+              type: "linear",
+              position: "right",
+              ticks: {
+                //   max: 1,
+                min: 0,
+              },
+            },
+          ],
         },
       },
     });
@@ -103,6 +129,7 @@ class ChartWrapper {
     const keys = Object.keys(this.rawdata).sort();
     this.chart.data.labels = keys;
     this.chart.data.datasets[0].data = keys.map((k) => this.rawdata[k].temp);
+    this.chart.data.datasets[1].data = keys.map((k) => this.rawdata[k].co2);
     this.chart.update({ duration: 0 });
 
     this.chart.config.options.scales.xAxes[0].ticks.min = this.range.begin.format(
@@ -115,13 +142,17 @@ class ChartWrapper {
     this.chart.update();
   }
 
+  add_row(row: ApiRow) {
+    this.rawdata[row.time] = this.rawdata[row.time] || {};
+    if (row.temp !== undefined) this.rawdata[row.time].temp = row.temp;
+    if (row.co2 !== undefined) this.rawdata[row.time].co2 = row.co2;
+  }
+
   async update() {
     if (Object.keys(this.rawdata).length == 0) {
-      (await get_data(this.range.begin, this.range.end)).forEach((a) => {
-        this.rawdata[a.time] = {
-          temp: a.temp,
-        };
-      });
+      (await get_data(this.range.begin, this.range.end)).forEach((a) =>
+        this.add_row(a)
+      );
     } else {
       const min_x = moment(
         Object.keys(this.rawdata).reduce((mi: string | null, a) => {
@@ -137,18 +168,12 @@ class ChartWrapper {
       ).add(5, "minutes");
 
       if (min_x > this.range.begin) {
-        (await get_data(this.range.begin, min_x)).forEach((a) => {
-          this.rawdata[a.time] = {
-            temp: a.temp,
-          };
-        });
+        (await get_data(this.range.begin, min_x)).forEach((a) =>
+          this.add_row(a)
+        );
       }
       if (max_x < this.range.end) {
-        (await get_data(max_x, this.range.end)).forEach((a) => {
-          this.rawdata[a.time] = {
-            temp: a.temp,
-          };
-        });
+        (await get_data(max_x, this.range.end)).forEach((a) => this.add_row(a));
       }
     }
 
