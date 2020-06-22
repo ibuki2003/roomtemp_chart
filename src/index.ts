@@ -16,6 +16,7 @@ class ChartWrapper {
     moment.duration(30, "days"),
     moment.duration(15, "days"),
     moment.duration(7, "days"),
+    moment.duration(3, "days"),
     moment.duration(1, "days"),
     moment.duration(12, "hours"),
     moment.duration(6, "hours"),
@@ -28,7 +29,7 @@ class ChartWrapper {
   rawdata: { [key: string]: Datum } = {};
 
   pos: moment.Moment = moment();
-  scale_idx = 5;
+  scale_idx = 6;
 
   get scale() {
     return this.scales[this.scale_idx];
